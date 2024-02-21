@@ -25,32 +25,43 @@ menu_item.forEach((item) => {
 });
 
 
-let currentSlide = 0;
+// Image Slider
+let slider = document.querySelector('.slider .list');
+let items = document.querySelectorAll('.slider .list .item');
+let next = document.getElementById('next');
+let prev = document.getElementById('prev');
+let dots = document.querySelectorAll('.slider .dots li');
 
-function showSlide(index) {
-  const slider = document.querySelector('.slider');
-  const slides = document.querySelectorAll('.slide');
-  const descriptions = document.querySelectorAll('.slide-description p');
+let lengthItems = items.length - 1;
+let active = 0;
+next.onclick = function(){
+    active = active + 1 <= lengthItems ? active + 1 : 0;
+    reloadSlider();
+}
+prev.onclick = function(){
+    active = active - 1 >= 0 ? active - 1 : lengthItems;
+    reloadSlider();
+}
+let refreshInterval = setInterval(()=> {next.click()}, 3000);
+function reloadSlider(){
+    slider.style.left = -items[active].offsetLeft + 'px';
+    // 
+    let last_active_dot = document.querySelector('.slider .dots li.active');
+    last_active_dot.classList.remove('active');
+    dots[active].classList.add('active');
 
-  if (index < 0) {
-    currentSlide = slides.length - 1;
-  } else if (index >= slides.length) {
-    currentSlide = 0;
-  } else {
-    currentSlide = index;
-  }
+    clearInterval(refreshInterval);
+    refreshInterval = setInterval(()=> {next.click()}, 3000);
 
-  const translateValue = -currentSlide * 100 + '%';
-  slider.style.transform = 'translateX(' + translateValue + ')';
+    
 }
 
-function nextSlide() {
-  showSlide(currentSlide + 1);
-}
-
-function prevSlide() {
-  showSlide(currentSlide - 1);
-}
-
-// Auto slide every 10 seconds
-setInterval(nextSlide, 10000);
+dots.forEach((li, key) => {
+    li.addEventListener('click', ()=>{
+         active = key;
+         reloadSlider();
+    })
+})
+window.onresize = function(event) {
+    reloadSlider();
+};
